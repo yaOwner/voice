@@ -5,13 +5,13 @@ class Voice(commands.Cog):
 	@commands.Cog.listener()
 	async def on_voice_state_update(self, member, before, after):
 		try:
-			if after.channel.id == 759846996721795112:
+			if after.channel.id == 759846996721795112: #айди канала где при подключении будет создаваться приватка
 				if voice.count_documents({"owner": member.id}):
 					
 					name = voice.find_one({"owner": member.id})['name']
 					limit = voice.find_one({"owner": member.id})['limit']
 
-					category = discord.utils.get(member.guild.categories, id = 759847972979867659)
+					category = discord.utils.get(member.guild.categories, id = 759847972979867659) #айди категории гдк будет создаваться приватка
 					channel = await member.guild.create_voice_channel(name, category = category)
 					await channel.edit(user_limit = limit)
 					await member.move_to(channel)
