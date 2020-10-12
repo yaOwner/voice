@@ -86,51 +86,66 @@ class Voice(commands.Cog):
 
 	@voice.command()
 	async def lock(self, ctx, member: discord.Member = None):
-		if not member:
-			if voice.count_documents({"owner": ctx.author.id}):
-				vID = voice.find_one({"owner": ctx.author.id})['vID']
-				channel = ctx.guild.get_channel(vID)
-				if not channel:
-					emb = discord.Embed(description = 'Зайдите в ваш голосовой канал!', timestamp = datetime.datetime.utcnow())
-					emb.set_author(icon_url = '{}'.format(ctx.author.avatar_url), name = '{}'.format(ctx.author))
-					await ctx.send(embed = emb)
-
-				else:
-
-					role = discord.utils.get(ctx.guild.roles, name = '@everyone')
-					await channel.set_permissions(role, connect = False)
-					await channel.set_permissions(ctx.author, connect = True)
-
-					emb = discord.Embed(description = 'Доступ к вашему каналу был закрыт!', timestamp = datetime.datetime.utcnow())
-					emb.set_author(icon_url = '{}'.format(ctx.author.avatar_url), name = '{}'.format(ctx.author))
-					await ctx.send(embed = emb)
-
-			else:
-				emb = discord.Embed(description = 'Зайдите в ваш голосовой канал!', timestamp = datetime.datetime.utcnow())
-				emb.set_author(icon_url = '{}'.format(ctx.author.avatar_url), name = '{}'.format(ctx.author))
-				await ctx.send(embed = emb)
+		if member == ctx.author:
+			emb = discord.Embed(description = 'Нельзя заблокировать самого себя!', timestamp = datetime.datetime.utcnow())
+			emb.set_author(icon_url = '{}'.format(ctx.author.avatar_url), name = '{}'.format(ctx.author))
+			await ctx.send(embed = emb)
 
 		else:
-			if voice.count_documents({"owner": ctx.author.id}):
-				vID = voice.find_one({"owner": ctx.author.id})['vID']
-				channel = ctx.guild.get_channel(vID)
-				if not channel:
+
+			if not member:
+				if voice.count_documents({"owner": ctx.author.id}):
+					vID = voice.find_one({"owner": ctx.author.id})['vID']
+					channel = ctx.guild.get_channel(vID)
+					if not channel:
+						emb = discord.Embed(description = 'Зайдите в ваш голосовой канал!', timestamp = datetime.datetime.utcnow())
+						emb.set_author(icon_url = '{}'.format(ctx.author.avatar_url), name = '{}'.format(ctx.author))
+						await ctx.send(embed = emb)
+
+					else:
+
+						role = discord.utils.get(ctx.guild.roles, name = '@everyone')
+						await channel.set_permissions(role, connect = False)
+						await channel.set_permissions(ctx.author, connect = True)
+
+						emb = discord.Embed(description = 'Доступ к вашему каналу был закрыт!', timestamp = datetime.datetime.utcnow())
+						emb.set_author(icon_url = '{}'.format(ctx.author.avatar_url), name = '{}'.format(ctx.author))
+						await ctx.send(embed = emb)
+
+				else:
 					emb = discord.Embed(description = 'Зайдите в ваш голосовой канал!', timestamp = datetime.datetime.utcnow())
 					emb.set_author(icon_url = '{}'.format(ctx.author.avatar_url), name = '{}'.format(ctx.author))
 					await ctx.send(embed = emb)
 
+			else:
+				if voice.count_documents({"owner": ctx.author.id}):
+					vID = voice.find_one({"owner": ctx.author.id})['vID']
+					channel = ctx.guild.get_channel(vID)
+					if not channel:
+						emb = discord.Embed(description = 'Зайдите в ваш голосовой канал!', timestamp = datetime.datetime.utcnow())
+						emb.set_author(icon_url = '{}'.format(ctx.author.avatar_url), name = '{}'.format(ctx.author))
+						await ctx.send(embed = emb)
+
+					else:
+						if member in channel.members:
+							await channel.set_permissions(member, connect = False)
+							await member.move_to(None)
+
+							emb = discord.Embed(description = f'Доступ к вашему каналу был закрыт для {member.mention}!', timestamp = datetime.datetime.utcnow())
+							emb.set_author(icon_url = '{}'.format(ctx.author.avatar_url), name = '{}'.format(ctx.author))
+							await ctx.send(embed = emb)
+
+						else:
+							await channel.set_permissions(member, connect = False)
+
+							emb = discord.Embed(description = f'Доступ к вашему каналу был закрыт для {member.mention}!', timestamp = datetime.datetime.utcnow())
+							emb.set_author(icon_url = '{}'.format(ctx.author.avatar_url), name = '{}'.format(ctx.author))
+							await ctx.send(embed = emb)
+
 				else:
-
-					await channel.set_permissions(member, connect = False)
-
-					emb = discord.Embed(description = f'Доступ к вашему каналу был закрыт для {member.mention}!', timestamp = datetime.datetime.utcnow())
+					emb = discord.Embed(description = 'Зайдите в ваш голосовой канал!', timestamp = datetime.datetime.utcnow())
 					emb.set_author(icon_url = '{}'.format(ctx.author.avatar_url), name = '{}'.format(ctx.author))
 					await ctx.send(embed = emb)
-
-			else:
-				emb = discord.Embed(description = 'Зайдите в ваш голосовой канал!', timestamp = datetime.datetime.utcnow())
-				emb.set_author(icon_url = '{}'.format(ctx.author.avatar_url), name = '{}'.format(ctx.author))
-				await ctx.send(embed = emb)
 
 
 	@voice.command()
