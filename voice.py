@@ -59,7 +59,6 @@ class Voice(commands.Cog):
 						}
 					)
 						
-					await channel2.set_permissions(member, connect = False)
 					try:
 						await member.move_to(channel)
 					except:
@@ -67,16 +66,23 @@ class Voice(commands.Cog):
 						channel = member.guild.get_channel(vID)
 
 						await channel.delete()
-						await channel2.set_permissions(member, connect = True)			
-					def check(a,b,c):
-						return len(channel.members) == 0
-									
-					await self.Bot.wait_for('voice_state_update', check=check)
-					await channel.delete()
+						await channel2.set_permissions(member, connect = True)		
 
-					await asyncio.sleep(5)
+					else:	
+						await channel.edit(user_limit = 10)
 
-					await channel2.set_permissions(member, connect = True)
+						await channel2.set_permissions(member, connect = False)
+						
+
+						def check(a,b,c):
+							return len(channel.members) == 0
+										
+						await self.Bot.wait_for('voice_state_update', check=check)
+						await channel.delete()
+
+						await asyncio.sleep(5)
+
+						await channel2.set_permissions(member, connect = True)
 
 	@commands.group(aliases = ['v'])
 	async def voice(self, ctx):
