@@ -4,46 +4,52 @@ class Voice(commands.Cog):
 
 	@commands.Cog.listener()
 	async def on_voice_state_update(self, member, before, after):
-		try:
-			if after.channel.id == 736655956443922554:
-				
+		if after.channel != None:
+			if after.channel.id == 759846996721795112:
+
 				if voice.count_documents({"owner": member.id}):
-						
+							
 					name = voice.find_one({"owner": member.id})['name']
 					limit = voice.find_one({"owner": member.id})['limit']
 
-					channel2 = member.guild.get_channel(736655956443922554)
+					channel2 = member.guild.get_channel(759846996721795112)
 
-					category = discord.utils.get(member.guild.categories, id = 736655956183613441)
-						
+					category = discord.utils.get(member.guild.categories, id = 759847972979867659)
+							
 					channel = await member.guild.create_voice_channel(name, category = category)
 					voice.update_one({"owner": member.id}, {"$set": {"vID": channel.id}})
-					
-					await member.move_to(channel)
-					
-					await channel.edit(user_limit = limit)
 						
-					await channel2.set_permissions(member, connect = False)
-								
-					def check(a,b,c):
-						return len(channel.members) == 0
-								
-					await self.Bot.wait_for('voice_state_update', check=check)
-					await channel.delete()
+					try:
+						await member.move_to(channel)
+					except:
+						vID = voice.find_one({"owner": member.id})['vID']
+						channel = member.guild.get_channel(vID)
 
-					await asyncio.sleep(5)
+						await channel.delete()
+						await channel2.set_permissions(member, connect = True)
 
-					await channel2.set_permissions(member, connect = True)
+					else:
+						
+						await channel.edit(user_limit = limit)
+								
+						await channel2.set_permissions(member, connect = False)
+										
+						def check(a,b,c):
+							return len(channel.members) == 0
+										
+						await self.Bot.wait_for('voice_state_update', check=check)
+						await channel.delete()
+
+						await asyncio.sleep(5)
+
+						await channel2.set_permissions(member, connect = True)
 
 				else:
 
-					channel2 = member.guild.get_channel(736655956443922554)
-					category = discord.utils.get(member.guild.categories, id = 736655956183613441)
-						
-					channel = await member.guild.create_voice_channel(member.name, category = category)
+					channel2 = member.guild.get_channel(759846996721795112)
+					category = discord.utils.get(member.guild.categories, id = 759847972979867659)
 							
-					await channel2.set_permissions(member, connect = False)
-
+					channel = await member.guild.create_voice_channel(member.name, category = category)
 					voice.insert_one(
 						{
 							"owner": member.id, 
@@ -52,26 +58,25 @@ class Voice(commands.Cog):
 							"vID": channel.id
 						}
 					)
+						
+					await channel2.set_permissions(member, connect = False)
+					try:
+						await member.move_to(channel)
+					except:
+						vID = voice.find_one({"owner": member.id})['vID']
+						channel = member.guild.get_channel(vID)
 
-					await member.move_to(channel)			
+						await channel.delete()
+						await channel2.set_permissions(member, connect = True)			
 					def check(a,b,c):
 						return len(channel.members) == 0
-								
+									
 					await self.Bot.wait_for('voice_state_update', check=check)
 					await channel.delete()
 
 					await asyncio.sleep(5)
 
 					await channel2.set_permissions(member, connect = True)
-
-		except:
-			try:
-				vID = voice.find_one({"owner": member.id})['vID']
-				channel = member.guild.get_channel(vID)
-				await channel.delete()
-
-			except:
-				pass
 
 	@commands.group(aliases = ['v'])
 	async def voice(self, ctx):
