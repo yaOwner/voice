@@ -12,8 +12,6 @@ class Voice(commands.Cog):
 					name = voice.find_one({"owner": member.id})['name']
 					limit = voice.find_one({"owner": member.id})['limit']
 
-					channel2 = member.guild.get_channel(759846996721795112)
-
 					category = discord.utils.get(member.guild.categories, id = 759847972979867659)
 							
 					channel = await member.guild.create_voice_channel(name, category = category)
@@ -26,13 +24,11 @@ class Voice(commands.Cog):
 						channel = member.guild.get_channel(vID)
 
 						await channel.delete()
-						await channel2.set_permissions(member, connect = True)
 
 					else:
 						
 						await channel.edit(user_limit = limit)
 								
-						await channel2.set_permissions(member, connect = False)
 										
 						def check(a,b,c):
 							return len(channel.members) == 0
@@ -40,13 +36,8 @@ class Voice(commands.Cog):
 						await self.Bot.wait_for('voice_state_update', check=check)
 						await channel.delete()
 
-						await asyncio.sleep(5)
-
-						await channel2.set_permissions(member, connect = True)
-
 				else:
 
-					channel2 = member.guild.get_channel(759846996721795112)
 					category = discord.utils.get(member.guild.categories, id = 759847972979867659)
 							
 					channel = await member.guild.create_voice_channel(member.name, category = category)
@@ -65,13 +56,11 @@ class Voice(commands.Cog):
 						vID = voice.find_one({"owner": member.id})['vID']
 						channel = member.guild.get_channel(vID)
 
-						await channel.delete()
-						await channel2.set_permissions(member, connect = True)		
+						await channel.delete()	
 
 					else:	
 						await channel.edit(user_limit = 10)
 
-						await channel2.set_permissions(member, connect = False)
 						
 
 						def check(a,b,c):
@@ -80,10 +69,7 @@ class Voice(commands.Cog):
 						await self.Bot.wait_for('voice_state_update', check=check)
 						await channel.delete()
 
-						await asyncio.sleep(5)
-
-						await channel2.set_permissions(member, connect = True)
-
+	
 	@commands.group(aliases = ['v'])
 	async def voice(self, ctx):
 		pass
